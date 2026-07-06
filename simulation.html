@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-  <title>Water · Sensor Flow + Wave Tank</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water Container · Auto Variation + Monitoring Control</title>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -16,34 +16,32 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 24px;
       margin: 0;
     }
-    .container { max-width: 1100px; width: 100%; }
+    .container { max-width: 1000px; width: 100%; }
 
-    /* MAIN MACHINE */
     .machine {
       background: #1d3247;
       background-image: radial-gradient(circle at 30% 20%, #2f4b66, #112433);
       border-radius: 70px 70px 50px 50px;
-      padding: 28px 28px 32px 28px;
+      padding: 30px 30px 36px 30px;
       box-shadow: 0 24px 48px rgba(0,10,25,0.6), inset 0 -6px 0 #0a1a2b;
       border: 1px solid #4a6d8a;
     }
     .machine-inner {
       background: #1d3650;
       border-radius: 48px;
-      padding: 24px 24px 26px 24px;
+      padding: 28px 28px 30px 28px;
       box-shadow: inset 0 6px 14px rgba(0,0,0,0.4);
       border: 1px solid #467193;
     }
 
-    /* HEADER */
     .top-label {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
       gap: 10px;
     }
@@ -56,31 +54,29 @@
       align-items: center;
       gap: 12px;
     }
-    .badge {
+    .top-label .badge {
+      background: #2b4b68;
       padding: 6px 18px;
       border-radius: 60px;
+      color: #b5d6f2;
       font-size: 14px;
       border: 1px solid #4f7b9e;
-      background: #2b4b68;
-      color: #b5d6f2;
     }
-    .badge.idle { background: #4a3a2a; border-color: #8a6a3a; color: #f5d89a; }
-    .badge.monitoring { background: #1e6b4a; border-color: #42bb83; color: #b8f0d0; }
-    .badge.fault { background: #6a2a2a; border-color: #cc4444; color: #ffaaaa; animation: pulseBadge 1s infinite; }
-    .badge.normal { background: #1a4a3a; border-color: #3a9a7a; color: #8dd4b0; }
+    .top-label .badge.idle { background: #4a3a2a; border-color: #8a6a3a; color: #f5d89a; }
+    .top-label .badge.monitoring { background: #1e6b4a; border-color: #42bb83; color: #b8f0d0; }
+    .top-label .badge.fault { background: #6a2a2a; border-color: #cc4444; color: #ffaaaa; animation: pulseBadge 1s infinite; }
+    .top-label .badge.normal { background: #1a4a3a; border-color: #3a9a7a; color: #8dd4b0; }
+    @keyframes pulseBadge { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-    @keyframes pulseBadge { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-    /* CONTROL BUTTONS */
     .control-section {
       display: flex;
       justify-content: center;
-      gap: 14px;
-      margin-bottom: 18px;
+      gap: 16px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
     .control-btn {
-      padding: 12px 28px;
+      padding: 12px 30px;
       border-radius: 60px;
       font-weight: 700;
       font-size: 17px;
@@ -89,6 +85,7 @@
       transition: 0.15s;
       background: #203b54;
       color: #b2cfec;
+      letter-spacing: 0.5px;
       min-width: 120px;
     }
     .control-btn.on { background: #1e7e56; border-color: #42bb83; color: white; box-shadow: 0 0 24px #2ea06a; }
@@ -98,59 +95,83 @@
     .control-btn:hover { transform: scale(1.03); }
     .control-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    /* SENSOR GRID — symbols & animation instead of sliders */
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: 14px;
       margin-bottom: 20px;
     }
     .sensor-card {
       background: #152b3f;
-      border-radius: 32px;
-      padding: 14px 10px 16px 10px;
+      border-radius: 28px;
+      padding: 14px 12px 16px 12px;
       border: 1px solid #3a5a78;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
       text-align: center;
-      transition: opacity 0.4s, border-color 0.3s, background 0.3s;
+      transition: opacity 0.4s, border-color 0.3s;
       position: relative;
     }
-    .sensor-card.idle { opacity: 0.5; filter: grayscale(0.6); }
-    .sensor-card .icon { font-size: 34px; display: block; margin-bottom: 2px; transition: transform 0.2s; }
-    .sensor-card .label { color: #b0cee8; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; }
-    .sensor-card .value { font-size: 32px; font-weight: 700; color: #ddf3ff; text-shadow: 0 0 20px #2a8ec9; margin: 2px 0; }
-    .sensor-card .unit { font-size: 14px; color: #8fb5d0; margin-left: 4px; }
+    .sensor-card.idle { opacity: 0.4; }
+    .sensor-card .icon { font-size: 26px; display: block; margin-bottom: 2px; }
+    .sensor-card .label { color: #b0cee8; font-size: 12px; font-weight: 500; letter-spacing: 0.3px; }
+    .sensor-card .value { font-size: 28px; font-weight: 700; color: #ddf3ff; text-shadow: 0 0 16px #2a8ec9; margin: 2px 0; }
+    .sensor-card .unit { font-size: 13px; color: #8fb5d0; margin-left: 4px; }
     .sensor-card .badge {
       font-size: 11px;
-      padding: 3px 14px;
+      padding: 2px 14px;
       border-radius: 30px;
       display: inline-block;
       margin-top: 2px;
       font-weight: 600;
     }
-    .badge.normal { background: #1a4a3a; border: 1px solid #3a9a7a; color: #8dd4b0; }
-    .badge.warning { background: #5a4a2a; border: 1px solid #9a8a3a; color: #f5d89a; }
-    .badge.critical { background: #5a2a2a; border: 1px solid #aa4a4a; color: #f5a0a0; animation: pulseBadge 1s infinite; }
-    .badge.unknown { background: #2a3a4a; border: 1px solid #4a5a6a; color: #8a9aaa; }
+    .sensor-card .badge.normal { background: #1a4a3a; border: 1px solid #3a9a7a; color: #8dd4b0; }
+    .sensor-card .badge.warning { background: #5a4a2a; border: 1px solid #9a8a3a; color: #f5d89a; }
+    .sensor-card .badge.critical { background: #5a2a2a; border: 1px solid #aa4a4a; color: #f5a0a0; animation: pulseBadge 1s infinite; }
+    .sensor-card .badge.unknown { background: #2a3a4a; border: 1px solid #4a5a6a; color: #8a9aaa; }
 
-    /* replace slider with animated symbol bar */
-    .sensor-symbol-bar {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      min-height: 28px;
+    .sensor-slider {
+      width: 100%;
+      margin-top: 6px;
     }
-    .sensor-symbol-bar span {
-      font-size: 20px;
-      transition: all 0.3s;
-      filter: drop-shadow(0 0 4px rgba(60,180,255,0.3));
+    .sensor-slider input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: #0d1f30;
+      border-radius: 20px;
+      outline: none;
+      border: 1px solid #3d6485;
+      transition: opacity 0.4s;
     }
-    .sensor-symbol-bar .dim { opacity: 0.25; filter: grayscale(0.8); }
-    .sensor-symbol-bar .glow { filter: drop-shadow(0 0 8px #5ac0ff); }
+    .sensor-slider input[type="range"]:disabled {
+      opacity: 0.3;
+      border-color: #3a4a5a;
+    }
+    .sensor-slider input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #7bc0f0;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 16px #3f95d0;
+      border: 2px solid #c5e2ff;
+    }
+    .sensor-slider input[type="range"]:disabled::-webkit-slider-thumb {
+      background: #4a5a6a;
+      box-shadow: none;
+      border-color: #3a4a5a;
+      cursor: not-allowed;
+    }
+    .sensor-slider input[type="range"].user-control {
+      border-color: #7bc0f0;
+    }
+    .sensor-slider input[type="range"].user-control::-webkit-slider-thumb {
+      background: #f0c07b;
+      border-color: #f0d07b;
+      box-shadow: 0 0 20px #f0a03a;
+    }
 
-    /* TANK VISUAL */
     .tank-visual {
       background: #112b3f;
       border-radius: 120px 120px 60px 60px;
@@ -200,7 +221,6 @@
     .tank-state-label.warning { color: #f5d89a; border: 1px solid #9a8a3a; }
     .tank-state-label.critical { color: #f5a0a0; border: 1px solid #aa4a4a; animation: pulseBadge 1s infinite; }
 
-    /* WATER WAVES */
     .water-container {
       position: absolute;
       bottom: 0;
@@ -258,7 +278,6 @@
       transition: opacity 0.8s;
     }
 
-    /* FLOW DISPLAY */
     .flow-section {
       display: flex;
       flex-direction: column;
@@ -269,7 +288,7 @@
       z-index: 2;
       transition: opacity 0.4s;
     }
-    .flow-icon { font-size: 44px; filter: drop-shadow(0 0 16px #3d95d0); margin-bottom: 2px; transition: opacity 0.4s; }
+    .flow-icon { font-size: 40px; filter: drop-shadow(0 0 12px #3d95d0); margin-bottom: 2px; transition: opacity 0.4s; }
     .flow-value {
       font-size: 56px;
       font-weight: 700;
@@ -283,7 +302,6 @@
     .flow-unit { font-size: 20px; font-weight: 400; color: #97c3e8; margin-left: 6px; }
     .flow-unit.idle { color: #5a6a7a; }
 
-    /* REGEN ALERT */
     .regen-alert {
       margin: 12px 0 0 0;
       padding: 12px 20px;
@@ -313,7 +331,6 @@
     }
     .regen-alert .alert-btn:hover { background: #dd5555; transform: scale(1.05); }
 
-    /* STATUS ROW */
     .status-row {
       display: flex;
       justify-content: center;
@@ -364,11 +381,10 @@
       </div>
 
       <div class="regen-alert" id="regenAlert">
-        <span class="alert-text">⚠️ REGENERATION REQUIRED — Threshold crossed</span>
+        <span class="alert-text">⚠️ REGENERATION REQUIRED — Threshold crossed (Salt/TDS/Pressure)</span>
         <button class="alert-btn" id="regenActionBtn">▶ Regenerate Now</button>
       </div>
 
-      <!-- SENSOR GRID with symbols instead of sliders -->
       <div class="sensor-grid" id="sensorGrid">
         <div class="sensor-card" id="pressureCard">
           <span class="icon">⏲️</span>
@@ -376,7 +392,9 @@
           <div class="value" id="pressureVal">2.50</div>
           <div class="unit">bar</div>
           <div class="badge normal" id="pressureBadge">NORMAL</div>
-          <div class="sensor-symbol-bar" id="pressureBar"></div>
+          <div class="sensor-slider">
+            <input type="range" id="pressureSlider" min="0" max="4" step="0.05" value="2.50" disabled />
+          </div>
         </div>
         <div class="sensor-card" id="tdsCard">
           <span class="icon">⚗️</span>
@@ -384,7 +402,9 @@
           <div class="value" id="tdsVal">150</div>
           <div class="unit">ppm</div>
           <div class="badge normal" id="tdsBadge">GOOD</div>
-          <div class="sensor-symbol-bar" id="tdsBar"></div>
+          <div class="sensor-slider">
+            <input type="range" id="tdsSlider" min="50" max="900" step="5" value="150" disabled />
+          </div>
         </div>
         <div class="sensor-card" id="saltCard">
           <span class="icon">🧂</span>
@@ -392,7 +412,9 @@
           <div class="value" id="saltVal">75</div>
           <div class="unit">%</div>
           <div class="badge normal" id="saltBadge">OK</div>
-          <div class="sensor-symbol-bar" id="saltBar"></div>
+          <div class="sensor-slider">
+            <input type="range" id="saltSlider" min="0" max="100" step="1" value="75" disabled />
+          </div>
         </div>
         <div class="sensor-card" id="flowCard">
           <span class="icon">💧</span>
@@ -400,11 +422,12 @@
           <div class="value" id="flowSensorVal">5.0</div>
           <div class="unit">L/min</div>
           <div class="badge normal" id="flowBadge">FLOWING</div>
-          <div class="sensor-symbol-bar" id="flowBar"></div>
+          <div class="sensor-slider">
+            <input type="range" id="flowSensorSlider" min="0" max="15" step="0.1" value="5.0" disabled />
+          </div>
         </div>
       </div>
 
-      <!-- TANK VISUAL -->
       <div class="tank-visual">
         <div class="tank-body normal" id="tankBody">
           <span class="tank-state-label normal" id="tankStateLabel">✅ NORMAL</span>
@@ -429,7 +452,7 @@
       </div>
 
       <div class="footnote">
-        <span>🔹 Symbols move with sensor values — real‑world feel. Monitoring enables manual control via symbols.</span>
+        <span>🔹 When power is ON, sensors auto-vary. Click "Start Monitoring" to take manual control via sliders.</span>
       </div>
 
     </div>
@@ -454,6 +477,7 @@
   const historyRef = deviceRef.child("history");
 
   // ========== DOM REFS ==========
+  const flowSlider = document.getElementById('flowSensorSlider');
   const flowDisplay = document.getElementById('flowDisplay');
   const flowStatus = document.getElementById('flowStatus');
   const powerStatus = document.getElementById('powerStatus');
@@ -476,11 +500,14 @@
   const saltBadge = document.getElementById('saltBadge');
   const flowBadge = document.getElementById('flowBadge');
 
-  // symbol bars
-  const pressureBar = document.getElementById('pressureBar');
-  const tdsBar = document.getElementById('tdsBar');
-  const saltBar = document.getElementById('saltBar');
-  const flowBar = document.getElementById('flowBar');
+  const pressureSlider = document.getElementById('pressureSlider');
+  const tdsSlider = document.getElementById('tdsSlider');
+  const saltSlider = document.getElementById('saltSlider');
+
+  const pressureCard = document.getElementById('pressureCard');
+  const tdsCard = document.getElementById('tdsCard');
+  const saltCard = document.getElementById('saltCard');
+  const flowCard = document.getElementById('flowCard');
 
   const powerOnBtn = document.getElementById('powerOnBtn');
   const powerOffBtn = document.getElementById('powerOffBtn');
@@ -494,7 +521,14 @@
     tds: { elevated: 350, critical: 600 },
     pressure: { low: 1.5, critical: 0.5 }
   };
-  const NORMAL_VALUES = { flow: 5.0, pressure: 2.50, tds: 150, salt: 75 };
+
+  // ========== NORMAL VALUES ==========
+  const NORMAL_VALUES = {
+    flow: 5.0,
+    pressure: 2.50,
+    tds: 150,
+    salt: 75
+  };
 
   // ========== STATE ==========
   let isPowerOn = true;
@@ -511,43 +545,43 @@
     salt: NORMAL_VALUES.salt
   };
 
-  // ========== SYMBOL BAR RENDER ==========
-  function renderSymbolBar(container, value, max, symbol, thresholds) {
-    const normalized = Math.min(1, Math.max(0, value / max));
-    const count = 7;
-    let html = '';
-    for (let i = 0; i < count; i++) {
-      const fill = (i + 1) / count;
-      const active = fill <= normalized;
-      let cls = active ? 'glow' : 'dim';
-      // extra glow for critical/warning
-      if (active && thresholds) {
-        if (thresholds.critical && value < thresholds.critical) cls += ' critical';
-        else if (thresholds.low && value < thresholds.low) cls += ' warning';
-      }
-      html += `<span class="${cls}">${symbol}</span>`;
-    }
-    container.innerHTML = html;
-  }
-
-  function updateSymbolBars() {
-    renderSymbolBar(pressureBar, sensors.pressure, 4, '⏲️', { low: THRESHOLDS.pressure.low, critical: THRESHOLDS.pressure.critical });
-    renderSymbolBar(tdsBar, sensors.tds, 900, '⚗️', { low: THRESHOLDS.tds.elevated, critical: THRESHOLDS.tds.critical });
-    renderSymbolBar(saltBar, sensors.salt, 100, '🧂', { low: THRESHOLDS.salt.low, critical: THRESHOLDS.salt.critical });
-    renderSymbolBar(flowBar, sensors.flow, 15, '💧', { low: 3, critical: 0.5 });
+  // ========== AUTO VARIATION ==========
+  function autoVarySensors() {
+    if (!isPowerOn || isUserControl) return;
+    
+    // Small random walks for each sensor
+    sensors.flow = Math.max(0, Math.min(15, sensors.flow + (Math.random() - 0.5) * 0.4));
+    sensors.pressure = Math.max(0, Math.min(4, sensors.pressure + (Math.random() - 0.5) * 0.08));
+    sensors.tds = Math.max(50, Math.min(900, sensors.tds + (Math.random() - 0.5) * 8));
+    sensors.salt = Math.max(0, Math.min(100, sensors.salt + (Math.random() - 0.5) * 0.6));
+    
+    // Update sliders to match (but don't trigger input events)
+    flowSlider.value = sensors.flow;
+    pressureSlider.value = sensors.pressure;
+    tdsSlider.value = sensors.tds;
+    saltSlider.value = sensors.salt;
+    
+    updateSensorUI();
+    pushToFirebase();
   }
 
   // ========== EVALUATE STATE ==========
   function evaluateState() {
     if (!isPowerOn) return { state: 'idle', level: 'idle' };
+
     const saltLow = sensors.salt < THRESHOLDS.salt.low;
     const saltCritical = sensors.salt < THRESHOLDS.salt.critical;
     const tdsElevated = sensors.tds > THRESHOLDS.tds.elevated;
     const tdsCritical = sensors.tds > THRESHOLDS.tds.critical;
     const pressureLow = sensors.pressure < THRESHOLDS.pressure.low;
     const pressureCritical = sensors.pressure < THRESHOLDS.pressure.critical;
-    if (saltCritical || tdsCritical || pressureCritical) return { state: 'critical', level: 'critical' };
-    if (saltLow || tdsElevated || pressureLow) return { state: 'warning', level: 'warning' };
+
+    if (saltCritical || tdsCritical || pressureCritical) {
+      return { state: 'critical', level: 'critical' };
+    }
+    if (saltLow || tdsElevated || pressureLow) {
+      return { state: 'warning', level: 'warning' };
+    }
     return { state: 'normal', level: 'normal' };
   }
 
@@ -555,6 +589,7 @@
   function updateTankAndAlerts() {
     const evaluation = evaluateState();
     const stateLevel = evaluation.level;
+
     tankBody.className = 'tank-body';
     if (!isPowerOn) {
       tankBody.classList.add('idle');
@@ -566,6 +601,7 @@
       statusBadge.textContent = '⏻ IDLE';
       return;
     }
+
     if (stateLevel === 'normal') {
       tankBody.classList.add('normal');
       tankStateLabel.className = 'tank-state-label normal';
@@ -599,46 +635,92 @@
     saltVal.textContent = Math.round(sensors.salt);
     flowSensorVal.textContent = sensors.flow.toFixed(1);
 
-    // badges
-    const p = sensors.pressure;
-    pressureBadge.textContent = p < THRESHOLDS.pressure.critical ? 'CRITICAL' : p < THRESHOLDS.pressure.low ? 'LOW' : 'NORMAL';
-    pressureBadge.className = 'badge ' + (p < THRESHOLDS.pressure.critical ? 'critical' : p < THRESHOLDS.pressure.low ? 'warning' : 'normal');
+    // Pressure badge
+    if (sensors.pressure < THRESHOLDS.pressure.critical) {
+      pressureBadge.textContent = 'CRITICAL';
+      pressureBadge.className = 'badge critical';
+    } else if (sensors.pressure < THRESHOLDS.pressure.low) {
+      pressureBadge.textContent = 'LOW';
+      pressureBadge.className = 'badge warning';
+    } else {
+      pressureBadge.textContent = 'NORMAL';
+      pressureBadge.className = 'badge normal';
+    }
 
-    const t = sensors.tds;
-    tdsBadge.textContent = t > THRESHOLDS.tds.critical ? 'CRITICAL' : t > THRESHOLDS.tds.elevated ? 'ELEVATED' : 'GOOD';
-    tdsBadge.className = 'badge ' + (t > THRESHOLDS.tds.critical ? 'critical' : t > THRESHOLDS.tds.elevated ? 'warning' : 'normal');
+    // TDS badge
+    if (sensors.tds > THRESHOLDS.tds.critical) {
+      tdsBadge.textContent = 'CRITICAL';
+      tdsBadge.className = 'badge critical';
+    } else if (sensors.tds > THRESHOLDS.tds.elevated) {
+      tdsBadge.textContent = 'ELEVATED';
+      tdsBadge.className = 'badge warning';
+    } else {
+      tdsBadge.textContent = 'GOOD';
+      tdsBadge.className = 'badge normal';
+    }
 
-    const s = sensors.salt;
-    saltBadge.textContent = s < THRESHOLDS.salt.critical ? 'CRITICAL' : s < THRESHOLDS.salt.low ? 'LOW' : 'OK';
-    saltBadge.className = 'badge ' + (s < THRESHOLDS.salt.critical ? 'critical' : s < THRESHOLDS.salt.low ? 'warning' : 'normal');
+    // Salt badge
+    if (sensors.salt < THRESHOLDS.salt.critical) {
+      saltBadge.textContent = 'CRITICAL';
+      saltBadge.className = 'badge critical';
+    } else if (sensors.salt < THRESHOLDS.salt.low) {
+      saltBadge.textContent = 'LOW';
+      saltBadge.className = 'badge warning';
+    } else {
+      saltBadge.textContent = 'OK';
+      saltBadge.className = 'badge normal';
+    }
 
-    const f = sensors.flow;
-    flowBadge.textContent = f < 0.1 ? 'STALLED' : f < 3 ? 'TRICKLE' : f < 8 ? 'FLOWING' : 'HIGH FLOW';
-    flowBadge.className = 'badge ' + (f < 0.1 ? 'critical' : f < 3 ? 'warning' : 'normal');
+    // Flow badge
+    if (sensors.flow < 0.1) {
+      flowBadge.textContent = 'STALLED';
+      flowBadge.className = 'badge critical';
+    } else if (sensors.flow < 3) {
+      flowBadge.textContent = 'TRICKLE';
+      flowBadge.className = 'badge warning';
+    } else if (sensors.flow < 8) {
+      flowBadge.textContent = 'FLOWING';
+      flowBadge.className = 'badge normal';
+    } else {
+      flowBadge.textContent = 'HIGH FLOW';
+      flowBadge.className = 'badge normal';
+    }
 
     flowDisplay.innerHTML = sensors.flow.toFixed(1) + '<span class="flow-unit">L/min</span>';
-    flowDisplay.className = 'flow-value' + (isPowerOn ? '' : ' idle');
+    if (!isPowerOn) {
+      flowDisplay.className = 'flow-value idle';
+      flowDisplay.querySelector('.flow-unit').className = 'flow-unit idle';
+    } else {
+      flowDisplay.className = 'flow-value';
+      flowDisplay.querySelector('.flow-unit').className = 'flow-unit';
+    }
+
     if (!isPowerOn) {
       flowStatus.textContent = 'IDLE';
       flowStatus.style.color = '#f5d89a';
-    } else if (f < 0.1) { flowStatus.textContent = 'STALLED'; flowStatus.style.color = '#f8a0a0'; }
-    else if (f < 3) { flowStatus.textContent = 'TRICKLE'; flowStatus.style.color = '#f5c87a'; }
-    else if (f < 8) { flowStatus.textContent = 'FLOWING'; flowStatus.style.color = '#8dd4a8'; }
-    else { flowStatus.textContent = 'HIGH FLOW'; flowStatus.style.color = '#7fc8f0'; }
+    } else if (sensors.flow < 0.1) {
+      flowStatus.textContent = 'STALLED';
+      flowStatus.style.color = '#f8a0a0';
+    } else if (sensors.flow < 3) {
+      flowStatus.textContent = 'TRICKLE';
+      flowStatus.style.color = '#f5c87a';
+    } else if (sensors.flow < 8) {
+      flowStatus.textContent = 'FLOWING';
+      flowStatus.style.color = '#8dd4a8';
+    } else {
+      flowStatus.textContent = 'HIGH FLOW';
+      flowStatus.style.color = '#7fc8f0';
+    }
 
-    updateSymbolBars();
     updateTankAndAlerts();
   }
 
-  // ========== AUTO VARIATION ==========
-  function autoVarySensors() {
-    if (!isPowerOn || isUserControl) return;
-    sensors.flow = Math.max(0, Math.min(15, sensors.flow + (Math.random() - 0.5) * 0.4));
-    sensors.pressure = Math.max(0, Math.min(4, sensors.pressure + (Math.random() - 0.5) * 0.08));
-    sensors.tds = Math.max(50, Math.min(900, sensors.tds + (Math.random() - 0.5) * 8));
-    sensors.salt = Math.max(0, Math.min(100, sensors.salt + (Math.random() - 0.5) * 0.6));
-    updateSensorUI();
-    pushToFirebase();
+  // ========== READ SENSORS FROM SLIDERS ==========
+  function readSensorsFromSliders() {
+    sensors.flow = parseFloat(flowSlider.value);
+    sensors.pressure = parseFloat(pressureSlider.value);
+    sensors.tds = parseFloat(tdsSlider.value);
+    sensors.salt = parseFloat(saltSlider.value);
   }
 
   // ========== FIREBASE PUSH ==========
@@ -648,38 +730,58 @@
       deviceId: DEVICE_ID,
       state: isPowerOn ? (isFault ? 'FAULT' : (isMonitoring ? 'MONITORING' : 'IDLE')) : 'POWER_OFF',
       stateLevel: evaluation.level,
-      sensors: { flow: sensors.flow, pressure: sensors.pressure, tds: sensors.tds, salt: sensors.salt },
+      sensors: {
+        flow: sensors.flow,
+        pressure: sensors.pressure,
+        tds: sensors.tds,
+        salt: sensors.salt
+      },
       powerOn: isPowerOn,
       monitoring: isMonitoring,
       fault: isFault,
       userControl: isUserControl,
       lastUpdated: new Date().toISOString()
     };
+
     deviceRef.update(telemetry)
-      .then(() => { firebaseStatus.textContent = '✓ sent'; firebaseStatus.style.color = '#8dd4a8'; })
-      .catch(() => { firebaseStatus.textContent = '✗ error'; firebaseStatus.style.color = '#f8a0a0'; });
+      .then(() => {
+        firebaseStatus.textContent = '✓ sent';
+        firebaseStatus.style.color = '#8dd4a8';
+      })
+      .catch(err => {
+        firebaseStatus.textContent = '✗ error';
+        firebaseStatus.style.color = '#f8a0a0';
+        console.warn('Firebase error:', err.message);
+      });
+
     historyRef.push({
       ts: Date.now(),
       tsISO: new Date().toISOString(),
       sensors: { flow: sensors.flow, pressure: sensors.pressure, tds: sensors.tds, salt: sensors.salt },
       state: isPowerOn ? (isFault ? 'FAULT' : (isMonitoring ? 'MONITORING' : 'IDLE')) : 'POWER_OFF',
       stateLevel: evaluation.level
-    }).catch(() => {});
+    }).catch(e => console.warn('history error:', e.message));
   }
 
-  // ========== POWER / MONITORING ==========
+  // ========== POWER CONTROL ==========
   function updatePower() {
     if (isPowerOn) {
       powerOnBtn.className = 'control-btn on';
       powerOffBtn.className = 'control-btn';
       powerStatus.textContent = 'ON';
       powerStatus.style.color = '#8dd4a8';
+      
+      // Enable sliders only if monitoring is active
       if (isMonitoring) {
-        isUserControl = true;
+        enableUserControl();
       } else {
-        isUserControl = false;
-        if (!autoVariationInterval) autoVariationInterval = setInterval(autoVarySensors, 700);
+        disableUserControl();
+        // Start auto-variation
+        if (!autoVariationInterval) {
+          autoVariationInterval = setInterval(autoVarySensors, 800);
+        }
       }
+      
       flowIcon.style.opacity = '1';
       waterContainer.style.opacity = '1';
       waterOverlay.style.opacity = '1';
@@ -687,12 +789,19 @@
       monitorBtn.disabled = false;
     } else {
       if (isMonitoring) stopMonitoring();
-      if (autoVariationInterval) { clearInterval(autoVariationInterval); autoVariationInterval = null; }
+      if (autoVariationInterval) {
+        clearInterval(autoVariationInterval);
+        autoVariationInterval = null;
+      }
       isUserControl = false;
+      
       powerOnBtn.className = 'control-btn';
       powerOffBtn.className = 'control-btn off';
       powerStatus.textContent = 'OFF';
       powerStatus.style.color = '#f8a0a0';
+      
+      disableUserControl();
+      
       flowIcon.style.opacity = '0.3';
       waterContainer.style.opacity = '0.1';
       waterOverlay.style.opacity = '0.1';
@@ -708,6 +817,40 @@
     pushToFirebase();
   }
 
+  // ========== USER CONTROL ENABLE/DISABLE ==========
+  function enableUserControl() {
+    isUserControl = true;
+    if (autoVariationInterval) {
+      clearInterval(autoVariationInterval);
+      autoVariationInterval = null;
+    }
+    flowSlider.disabled = false;
+    pressureSlider.disabled = false;
+    tdsSlider.disabled = false;
+    saltSlider.disabled = false;
+    // Visual indicator for user control
+    document.querySelectorAll('.sensor-slider input').forEach(el => {
+      el.classList.add('user-control');
+    });
+    // Update sliders to current sensor values
+    flowSlider.value = sensors.flow;
+    pressureSlider.value = sensors.pressure;
+    tdsSlider.value = sensors.tds;
+    saltSlider.value = sensors.salt;
+  }
+
+  function disableUserControl() {
+    isUserControl = false;
+    flowSlider.disabled = true;
+    pressureSlider.disabled = true;
+    tdsSlider.disabled = true;
+    saltSlider.disabled = true;
+    document.querySelectorAll('.sensor-slider input').forEach(el => {
+      el.classList.remove('user-control');
+    });
+  }
+
+  // ========== MONITORING CONTROL ==========
   function startMonitoring() {
     if (isMonitoring || !isPowerOn) return;
     isMonitoring = true;
@@ -715,11 +858,15 @@
     monitorStatus.style.color = '#8dd4a8';
     monitorBtn.textContent = '⏹ Stop Monitoring';
     monitorBtn.classList.add('active');
-    isUserControl = true;
-    if (autoVariationInterval) { clearInterval(autoVariationInterval); autoVariationInterval = null; }
+    
+    // Enable user control
+    enableUserControl();
+    
     pushToFirebase();
     if (sendInterval) clearInterval(sendInterval);
-    sendInterval = setInterval(pushToFirebase, 2000);
+    sendInterval = setInterval(() => {
+      pushToFirebase();
+    }, 2000);
   }
 
   function stopMonitoring() {
@@ -729,68 +876,109 @@
     monitorStatus.style.color = '#f8a0a0';
     monitorBtn.textContent = '▶ Start Monitoring';
     monitorBtn.classList.remove('active');
-    isUserControl = false;
-    if (isPowerOn && !autoVariationInterval) autoVariationInterval = setInterval(autoVarySensors, 700);
-    if (sendInterval) { clearInterval(sendInterval); sendInterval = null; }
+    
+    // Disable user control and restart auto-variation
+    disableUserControl();
+    if (isPowerOn && !autoVariationInterval) {
+      autoVariationInterval = setInterval(autoVarySensors, 800);
+    }
+    
+    if (sendInterval) {
+      clearInterval(sendInterval);
+      sendInterval = null;
+    }
     pushToFirebase();
   }
 
+  // ========== REGENERATION ==========
   function performRegeneration() {
     if (!isPowerOn) return;
+    
     sensors.flow = NORMAL_VALUES.flow;
     sensors.pressure = NORMAL_VALUES.pressure;
     sensors.tds = NORMAL_VALUES.tds;
     sensors.salt = NORMAL_VALUES.salt;
+    
+    flowSlider.value = sensors.flow;
+    pressureSlider.value = sensors.pressure;
+    tdsSlider.value = sensors.tds;
+    saltSlider.value = sensors.salt;
+    
     isFault = false;
     regenAlert.classList.remove('show');
+    
     updateSensorUI();
     pushToFirebase();
-    firebaseStatus.textContent = '✓ Regenerated';
-    setTimeout(() => { firebaseStatus.textContent = '✓ sent'; }, 1800);
+    
+    firebaseStatus.textContent = '✓ Regenerated to NORMAL';
+    firebaseStatus.style.color = '#8dd4a8';
+    setTimeout(() => {
+      firebaseStatus.textContent = '✓ sent';
+    }, 2000);
   }
 
-  // ========== SYMBOL CLICK: MANUAL CONTROL (if monitoring) ==========
-  function setupSymbolClick(container, sensorKey, min, max, step) {
-    container.addEventListener('click', (e) => {
-      if (!isUserControl || !isPowerOn) return;
-      let newVal = sensors[sensorKey] + (e.shiftKey ? -step : step);
-      newVal = Math.max(min, Math.min(max, newVal));
-      sensors[sensorKey] = newVal;
-      updateSensorUI();
-      pushToFirebase();
-    });
-    container.style.cursor = isUserControl ? 'pointer' : 'default';
+  // ========== SLIDER EVENT LISTENERS ==========
+  function onSliderChange() {
+    if (!isUserControl) return;
+    readSensorsFromSliders();
+    updateSensorUI();
+    pushToFirebase();
   }
 
-  // ========== INIT ==========
+  flowSlider.addEventListener('input', onSliderChange);
+  pressureSlider.addEventListener('input', onSliderChange);
+  tdsSlider.addEventListener('input', onSliderChange);
+  saltSlider.addEventListener('input', onSliderChange);
+
+  // ========== BUTTON EVENTS ==========
+  powerOnBtn.addEventListener('click', function() {
+    if (!isPowerOn) {
+      isPowerOn = true;
+      updatePower();
+    }
+  });
+
+  powerOffBtn.addEventListener('click', function() {
+    if (isPowerOn) {
+      isPowerOn = false;
+      updatePower();
+    }
+  });
+
+  monitorBtn.addEventListener('click', function() {
+    if (!isPowerOn) return;
+    if (isMonitoring) {
+      stopMonitoring();
+    } else {
+      startMonitoring();
+    }
+  });
+
+  regenActionBtn.addEventListener('click', performRegeneration);
+
+  // ========== INITIAL STATE ==========
+  // Set initial values
   sensors.flow = NORMAL_VALUES.flow;
   sensors.pressure = NORMAL_VALUES.pressure;
   sensors.tds = NORMAL_VALUES.tds;
   sensors.salt = NORMAL_VALUES.salt;
-  autoVariationInterval = setInterval(autoVarySensors, 700);
+  
+  flowSlider.value = sensors.flow;
+  pressureSlider.value = sensors.pressure;
+  tdsSlider.value = sensors.tds;
+  saltSlider.value = sensors.salt;
+  
+  // Start auto-variation
+  autoVariationInterval = setInterval(autoVarySensors, 800);
+  
   updateSensorUI();
   updatePower();
+  
+  setTimeout(() => {
+    pushToFirebase();
+  }, 500);
 
-  // symbol click controls (only when monitoring)
-  setupSymbolClick(pressureBar, 'pressure', 0, 4, 0.15);
-  setupSymbolClick(tdsBar, 'tds', 50, 900, 10);
-  setupSymbolClick(saltBar, 'salt', 0, 100, 2);
-  setupSymbolClick(flowBar, 'flow', 0, 15, 0.3);
-
-  // button events
-  powerOnBtn.addEventListener('click', () => { if (!isPowerOn) { isPowerOn = true; updatePower(); } });
-  powerOffBtn.addEventListener('click', () => { if (isPowerOn) { isPowerOn = false; updatePower(); } });
-  monitorBtn.addEventListener('click', () => { if (!isPowerOn) return; isMonitoring ? stopMonitoring() : startMonitoring(); });
-  regenActionBtn.addEventListener('click', performRegeneration);
-
-  // update cursor for symbol bars when monitoring changes
-  const observer = new MutationObserver(() => {
-    const cursor = isUserControl && isPowerOn ? 'pointer' : 'default';
-    [pressureBar, tdsBar, saltBar, flowBar].forEach(el => el.style.cursor = cursor);
-  });
-  observer.observe(monitorBtn, { attributes: true, attributeFilter: ['class'] });
-
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener('beforeunload', function() {
     if (sendInterval) clearInterval(sendInterval);
     if (autoVariationInterval) clearInterval(autoVariationInterval);
     pushToFirebase();
